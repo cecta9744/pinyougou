@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- 1. 配置数据源 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          destroy-method="close">
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+        <property name="minIdle" value="${jdbc.minIdle}"/>
+    </bean>
+
+    <!-- 2. 配置SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 设置数据源 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 设置类型别名 (采用包扫描) -->
+        <property name="typeAliasesPackage" value="com.pinyougou.pojo"/>
+        <!-- 设置mybatis-config.xml -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!-- 设置SQL映射文件 -->
+        <property name="mapperLocations" value="classpath:mappers/**/*.xml"/>
+    </bean>
+
+    <!-- 3. 配置数据访问接口的代理对象 (批量配置)
+        到基础包下扫描所有的数据访问接口，再创建它们的代理对象，然后交给Spring容器
+        bean的id: 默认为接口的类名，首字母小写
+        配置通用Mapper整合Mybatis+Spring (我们的数据访问接口继承了通用Mapper接口)
+    -->
+    <bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.pinyougou.mapper"/>
+    </bean>
+
+    <!-- 4. 配置数据源事务管理器(DataSourceTransactionManager) -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 5. 配置开启事务注解驱动，由于dubbo用@service注解暴露服务，
+        业务层需要加事务会产生代理对象，需设置proxy-target-class为true采用cglib产生代理 -->
+    <tx:annotation-driven proxy-target-class="true"/>
+</beans>

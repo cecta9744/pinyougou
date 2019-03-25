@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pinyougou.mapper.BrandMapper">
+	<!--  多条件查询品牌 #{name}: 产生 ? 号  ${name} : 不会产生问号
+		where条件部分都用#{}取值
+
+		'%${name}%' 正确
+		'%#{name}%' 错误
+	-->
+	<select id="findAll" resultType="Brand">
+		select * from tb_brand
+		<where>
+			<!-- 品牌名称 -->
+			<if test="name != null and name != ''">
+				name like CONCAT('%',#{name},'%')
+			</if>
+			<!-- 品牌首字母 -->
+			<if test="firstChar != null and firstChar != ''">
+				AND first_char = #{firstChar}
+			</if>
+		</where>
+	</select>
+
+	<!-- 批量删除品牌 -->
+	<delete id="deleteAll">
+		DELETE FROM tb_brand WHERE id IN
+		<!--
+		Serializable[] ids:
+		   collection: array
+
+		List ids:
+			collection: list
+
+		@Param("ids") Serializable[] ids
+		   collection: ids
+		-->
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>

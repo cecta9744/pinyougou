@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 全局的设置信息-->
+    <settings>
+        <!-- 开启驼峰命名(方便自动映射) first_char firstChar -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!-- 开启缓存(默认开启) -->
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+
+    <!-- 配置插件 -->
+    <plugins>
+        <!-- 配置分页拦截器(拦截SqL语句，在你的sql语句后面加上limit) -->
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!-- 配置数据库方言(mysql、oracle、sqlserver等) -->
+            <property name="helperDialect" value="mysql"/>
+            <!-- 配置开启统计查询 count -->
+            <property name="rowBoundsWithCount" value="true"/>
+        </plugin>
+    </plugins>
+</configuration>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pinyougou.mapper.SpecificationOptionMapper">
+
+	<!-- 往规格选项表插入多行数据 -->
+	<insert id="save">
+		INSERT INTO `tb_specification_option`(option_name, spec_id, orders) VALUES
+		<foreach collection="specificationOptions" item="so" separator=",">
+			(#{so.optionName},#{id},#{so.orders})
+		</foreach>
+	</insert>
+</mapper>

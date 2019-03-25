@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pinyougou.mapper.GoodsMapper">
+
+	<!-- 多条件查询商品 -->
+	<select id="findAll" resultType="map">
+		SELECT id, goods_name AS goodsName,price,category1_id AS  category1Id,
+			category2_id AS  category2Id,category3_id AS  category3Id,
+			audit_status AS auditStatus, is_marketable as isMarketable
+		FROM tb_goods where is_delete IS NULL
+
+		<!-- 商家id -->
+		<if test="sellerId != null and sellerId !=''">
+			AND seller_id = #{sellerId}
+		</if>
+		<!-- 审核状态 -->
+		<if test="auditStatus != null and auditStatus !=''">
+			AND audit_status = #{auditStatus}
+		</if>
+		<!-- 商家id -->
+		<if test="goodsName != null and goodsName !=''">
+			AND goods_name like CONCAT('%',#{goodsName},'%')
+		</if>
+
+	</select>
+
+	<!-- 修改商品的状态码
+	 	#{} : 产生问号
+	 	${} : 取值
+	 -->
+	<update id="updateStatus">
+		UPDATE `tb_goods` SET ${columnName} = #{status} WHERE id IN
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/jms
+       http://www.springframework.org/schema/jms/spring-jms.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 加载属性文件 -->
+    <context:property-placeholder location="classpath:jms.properties"/>
+
+    <!-- ############ 通用的配置 ############# -->
+    <!-- 配置ActiveMQ连接工厂 -->
+    <bean id="activeMQConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <!-- 设置消息中间件的连接URL -->
+        <property name="brokerURL" value="${brokerURL}"/>
+    </bean>
+    <!-- 配置SpringJMS的连接工厂 -->
+    <bean id="singleConnectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+        <!-- 把ActiveMQ的连接工厂交给SpringJMS进行管理 -->
+        <property name="targetConnectionFactory" ref="activeMQConnectionFactory"/>
+    </bean>
+
+    <!-- ############ 配置消息的消费者 ############# -->
+    <!-- 配置消息监听器容器
+        connection-factory: 连接工厂
+        destination-type: 消息目的地的类型
+        concurrency: 并发数(线程数) min-max 1000-2000 (最大2048) 1条进程创建线程数量
+        acknowledge="transacted" : 开启消息事务
+    -->
+    <jms:listener-container connection-factory="singleConnectionFactory"
+                            concurrency="1"
+                            receive-timeout="10000"
+                            acknowledge="transacted"
+                            destination-type="queue">
+        <!-- 配置消息监听器
+            destination: 队列的名称
+         -->
+        <jms:listener destination="solr.queue" ref="itemMessageListener"/>
+        <jms:listener destination="solr.delete.queue" ref="deleteMessageListener"/>
+    </jms:listener-container>
+    <!-- 配置自定义的消息监听器 (SessionAwareMessageListener) -->
+    <bean id="itemMessageListener" class="com.pinyougou.search.listener.ItemMessageListener"/>
+    <bean id="deleteMessageListener" class="com.pinyougou.search.listener.DeleteMessageListener"/>
+
+
+</beans>

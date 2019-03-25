@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/jms
+       http://www.springframework.org/schema/jms/spring-jms.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 加载属性文件 -->
+    <context:property-placeholder location="classpath:jms.properties"/>
+
+    <!-- ############ 通用的配置 ############# -->
+    <!-- 配置ActiveMQ连接工厂 -->
+    <bean id="activeMQConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <!-- 设置消息中间件的连接URL -->
+        <property name="brokerURL" value="${brokerURL}"/>
+    </bean>
+    <!-- 配置SpringJMS的连接工厂 -->
+    <bean id="singleConnectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+        <!-- 把ActiveMQ的连接工厂交给SpringJMS进行管理 -->
+        <property name="targetConnectionFactory" ref="activeMQConnectionFactory"/>
+    </bean>
+
+    <!-- ############ 配置消息的生产者 ############# -->
+    <!-- 配置jmsTemplate生产消息 -->
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <!-- 设置连接工厂 -->
+        <property name="connectionFactory" ref="singleConnectionFactory"/>
+    </bean>
+
+
+    <!-- 配置消息的目的地 -->
+    <bean id="solrQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <!-- 设置队列的名称 -->
+        <constructor-arg name="name" value="solr.queue"/>
+    </bean>
+    <!-- 配置消息的目的地 -->
+    <bean id="solrDeleteQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <!-- 设置队列的名称 -->
+        <constructor-arg name="name" value="solr.delete.queue"/>
+    </bean>
+
+
+
+    <!-- 配置消息的目的地 -->
+    <bean id="pageTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <!-- 设置主题的名称 -->
+        <constructor-arg name="name" value="page.topic"/>
+    </bean>
+    <!-- 配置消息的目的地 -->
+    <bean id="pageDeleteTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <!-- 设置主题的名称 -->
+        <constructor-arg name="name" value="page.delete.topic"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+
+    <!-- 开启MVC注解驱动 -->
+    <mvc:annotation-driven/>
+    <!-- 配置静态资源用WEB容器默认的servlet来处理 -->
+    <mvc:default-servlet-handler/>
+
+
+    <!-- ########### 配置FreeMarker作为视图 ########### -->
+    <!-- 配置FreeMarkerConfigurer配置信息对象(它底层封装了Configuration) -->
+    <bean id="freeMarkerConfigurer" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <!-- 设置模板文件加载的基础路径 -->
+        <property name="templateLoaderPath" value="/WEB-INF/ftl/"/>
+        <!-- 设置模板文件默认的编码 -->
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+    <!-- 配置FreeMarker视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <!-- 设置模板文件最终输出的内容类型 (html) -->
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+        <!-- 设置模板文件的后缀名 -->
+        <property name="suffix" value=".ftl"/>
+    </bean>
+
+
+
+    <!-- ############ 配置Dubbo服务消费者 ############# -->
+    <!-- 配置当前应用的名称 -->
+    <dubbo:application name="pinyougou-item-web" />
+
+    <!-- 使用Zookeeper注册中心发现暴露的服务地址 -->
+    <dubbo:registry address="zookeeper://192.168.12.131:2181"/>
+
+    <!-- 配置包扫描的方式，生成远程服务接口的代理对象 -->
+    <dubbo:annotation package="com.pinyougou.item"/>
+</beans>

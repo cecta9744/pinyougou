@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:solr="http://www.springframework.org/schema/data/solr"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/data/solr
+       http://www.springframework.org/schema/data/solr/spring-solr.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 加载属性文件 -->
+    <context:property-placeholder location="classpath:props/application.properties"/>
+
+    <!-- ########### 配置spring-data-solr整合solrj ############ -->
+    <!-- 配置Solr服务器(服务器中索引库的连接URL) -->
+    <solr:solr-server id="solrServer" url="${collection}"
+                      timeout="100" maxConnections="100"/>
+
+    <!-- 配置SolrTemplate操作Solr服务器中的索引库(CRUD) -->
+    <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
+        <!-- 设置Solr服务器 -->
+        <constructor-arg name="solrServer" ref="solrServer"/>
+    </bean>
+
+</beans>

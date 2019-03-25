@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:solr="http://www.springframework.org/schema/data/solr"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/data/solr http://www.springframework.org/schema/data/solr/spring-solr.xsd">
+
+    <!-- 配置加载属性文件 -->
+    <context:property-placeholder location="classpath:props/db.properties"/>
+    <!-- 导入数据库访问的配置文件 -->
+    <import resource="classpath:applicationContext-mapper.xml"/>
+
+    <!-- ###### 配置spring-data-solr整合solrj ###### -->
+    <!-- 配置solr服务器 -->
+    <solr:solr-server id="solrServer" url="http://192.168.12.131:8088/solr/collection1"/>
+
+    <!-- 配置SolrTemplate操作Solr服务器 -->
+    <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
+        <constructor-arg name="solrServer" ref="solrServer"/>
+    </bean>
+
+    <!-- 配置组件扫描 -->
+    <context:component-scan base-package="com.pinyougou.solr.util"/>
+</beans>
